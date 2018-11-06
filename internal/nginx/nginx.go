@@ -402,15 +402,10 @@ func (nginx *Controller) UpdateMainConfigFile(cfg []byte) {
 	}
 
 	if !nginx.local {
-		w, err := os.Create(filename)
+		err := createFileAndWrite(filename, cfg)
 		if err != nil {
-			glog.Fatalf("Failed to open %v: %v", filename, err)
+			glog.Fatalf("%v", err.Error())
 		}
-		_, err = w.Write(cfg)
-		if err != nil {
-			glog.Fatalf("Failed to write to %v: %v", filename, err)
-		}
-		defer w.Close()
 	}
 	glog.V(3).Infof("The main NGINX config file has been updated")
 }
@@ -425,15 +420,10 @@ func (nginx *Controller) UpdateIngressConfigFile(name string, cfg []byte) {
 	}
 
 	if !nginx.local {
-		w, err := os.Create(filename)
+		err := createFileAndWrite(filename, cfg)
 		if err != nil {
-			glog.Fatalf("Failed to open %v: %v", filename, err)
+			glog.Fatalf("%v", err.Error())
 		}
-		_, err = w.Write(cfg)
-		if err != nil {
-			glog.Fatalf("Failed to write to %v: %v", filename, err)
-		}
-		defer w.Close()
 	}
 	glog.V(3).Infof("The Ingress config file has been updated")
 }
@@ -454,15 +444,10 @@ func (nginx *Controller) UpdateConfigVersionFile() {
 	}
 
 	if !nginx.local {
-		w, err := os.Create(tempname)
+		err := createFileAndWrite(tempname, cfg)
 		if err != nil {
-			glog.Fatalf("Failed to open %v: %v", filename, err)
+			glog.Fatalf("%v", err.Error())
 		}
-		_, err = w.Write(cfg)
-		if err != nil {
-			glog.Fatalf("Failed to write to %v: %v", filename, err)
-		}
-		w.Close()
 
 		err = os.Rename(tempname, filename)
 		if err != nil {
@@ -470,4 +455,20 @@ func (nginx *Controller) UpdateConfigVersionFile() {
 		}
 	}
 	glog.V(3).Infof("The config version file has been updated.")
+}
+
+func createFileAndWrite(name string, b []byte) error {
+	w, err := os.Create(name)
+	if err != nil {
+		return fmt.Errorf("Failed to open %v: %v", name, err)
+	}
+
+	defer w.Close()
+
+	_, err = w.Write(b)
+	if err != nil {
+		return fmt.Errorf("Failed to write to %v: %v", name, err)
+	}
+
+	return nil
 }
