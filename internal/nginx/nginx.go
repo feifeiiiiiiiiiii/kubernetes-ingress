@@ -416,7 +416,7 @@ func (nginx *Controller) UpdateIngressConfigFile(name string, cfg []byte) {
 	if !nginx.local {
 		err := createFileAndWrite(filename, cfg)
 		if err != nil {
-			glog.Fatalf("Failed to write NGINX conf: %v", err)
+			glog.Fatalf("Failed to write Ingress conf: %v", err)
 		}
 	}
 	glog.V(3).Infof("The Ingress config file has been updated")
