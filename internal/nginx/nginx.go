@@ -440,7 +440,7 @@ func (nginx *Controller) UpdateConfigVersionFile() {
 	if !nginx.local {
 		err := createFileAndWrite(tempname, cfg)
 		if err != nil {
-			glog.Fatalf("Failed to write NGINX conf: %v", err)
+			glog.Fatalf("Failed to write version config file: %v", err)
 		}
 
 		err = os.Rename(tempname, filename)
