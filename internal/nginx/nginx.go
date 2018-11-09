@@ -232,7 +232,7 @@ func (nginx *Controller) AddOrUpdateDHParam(dhparam string) (string, error) {
 	if !nginx.local {
 		err := createFileAndWrite(fileName, []byte(dhparam))
 		if err != nil {
-			return fileName, fmt.Errorf("Failed to write pem file %v: %v", fileName, err)
+			return fileName, fmt.Errorf("Failed to write pem file: %v", err)
 		}
 	}
 	return fileName, nil
