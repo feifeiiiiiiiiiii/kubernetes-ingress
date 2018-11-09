@@ -230,15 +230,9 @@ func (nginx *Controller) DeleteIngress(name string) {
 func (nginx *Controller) AddOrUpdateDHParam(dhparam string) (string, error) {
 	fileName := nginx.nginxSecretsPath + "/" + dhparamFilename
 	if !nginx.local {
-		pem, err := os.Create(fileName)
+		err := createFileAndWrite(fileName, []byte(dhparam))
 		if err != nil {
-			return fileName, fmt.Errorf("Couldn't create file %v: %v", fileName, err)
-		}
-		defer pem.Close()
-
-		_, err = pem.WriteString(dhparam)
-		if err != nil {
-			return fileName, fmt.Errorf("Couldn't write to pem file %v: %v", fileName, err)
+			return fileName, fmt.Errorf("Failed to write pem file %v: %v", fileName, err)
 		}
 	}
 	return fileName, nil
@@ -404,7 +398,7 @@ func (nginx *Controller) UpdateMainConfigFile(cfg []byte) {
 	if !nginx.local {
 		err := createFileAndWrite(filename, cfg)
 		if err != nil {
-			glog.Fatalf("%v", err.Error())
+			glog.Fatalf("Failed to write NGINX conf: %v", err)
 		}
 	}
 	glog.V(3).Infof("The main NGINX config file has been updated")
@@ -422,7 +416,7 @@ func (nginx *Controller) UpdateIngressConfigFile(name string, cfg []byte) {
 	if !nginx.local {
 		err := createFileAndWrite(filename, cfg)
 		if err != nil {
-			glog.Fatalf("%v", err.Error())
+			glog.Fatalf("Failed to write NGINX conf: %v", err)
 		}
 	}
 	glog.V(3).Infof("The Ingress config file has been updated")
@@ -446,7 +440,7 @@ func (nginx *Controller) UpdateConfigVersionFile() {
 	if !nginx.local {
 		err := createFileAndWrite(tempname, cfg)
 		if err != nil {
-			glog.Fatalf("%v", err.Error())
+			glog.Fatalf("Failed to write NGINX conf: %v", err)
 		}
 
 		err = os.Rename(tempname, filename)
